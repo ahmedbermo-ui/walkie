@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Walkie invite</title>
+<style>
+  :root { --bg:#F5F7F6; --ink:#10202A; --sec:#3F505B; --green:#0B6E55; --border:#D5DDE0; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:18px/1.45 system-ui, sans-serif; }
+  main { max-width:420px; margin:0 auto; padding:48px 20px; display:flex; flex-direction:column; gap:20px; }
+  h1 { font-size:30px; margin:0; }
+  p { color:var(--sec); margin:0; }
+  a.btn { display:flex; align-items:center; justify-content:center; height:72px; border-radius:20px; background:var(--green);
+          color:#fff; font-size:22px; font-weight:700; text-decoration:none; }
+  a.alt { background:#fff; color:var(--green); border:2px solid var(--green); }
+</style>
+</head>
+<body>
+<main>
+  <h1>You are invited to Walkie</h1>
+  <p>Open the app to accept. Then you can send each other voice clips with one button.</p>
+  <a class="btn" id="open" href="#">Open Walkie</a>
+  <a class="btn alt" id="get" href="#">Get the app</a>
+  <p id="err" hidden>This link is missing its code. Ask for a new link.</p>
+</main>
+<script>
+  // Keep in sync with applicationId in app/build.gradle.kts.
+  var PACKAGE = "app.walkie.family";
+  var token = new URLSearchParams(location.search).get("t") || "";
+  var store = "https://play.google.com/store/apps/details?id=" + PACKAGE;
+  document.getElementById("get").href = store;
+  if (!/^[A-Za-z0-9_-]{6,64}$/.test(token)) {
+    document.getElementById("open").hidden = true;
+    document.getElementById("err").hidden = false;
+  } else {
+    var deep = "walkie://invite?t=" + encodeURIComponent(token);
+    var isAndroid = /Android/i.test(navigator.userAgent);
+    document.getElementById("open").href = isAndroid
+      ? "intent://invite?t=" + encodeURIComponent(token) + "#Intent;scheme=walkie;package=" + PACKAGE +
+        ";S.browser_fallback_url=" + encodeURIComponent(store) + ";end"
+      : deep;
+  }
+</script>
+</body>
+</html>
